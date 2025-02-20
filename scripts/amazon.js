@@ -1,3 +1,7 @@
+import { products } from '../data/products.js';
+import {cart, addToCart} from '../data/cart.js';
+import { formatCurrency } from './utils/money.js';
+
 
 let productsHTML = '';
 
@@ -22,11 +26,11 @@ products.forEach((product) => {
           </div>
 
           <div class="product-price">
-            $${(product.priceCents/100).toFixed(2)}
+            $${formatCurrency(product.priceCents)}
           </div>
 
           <div class="product-quantity-container">
-            <select>
+            <select class="js-quantity-selector-${product.id}">
               <option selected value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
@@ -42,18 +46,54 @@ products.forEach((product) => {
 
           <div class="product-spacer"></div>
 
-          <div class="added-to-cart">
+          <div class="added-to-cart add-cart-message">
             <img src="images/icons/checkmark.png">
             Added
           </div>
 
-          <button class="add-to-cart-button button-primary">
+          <button class="add-to-cart-button button-primary js-add-to-cart" data-product-id = "${product.id}">
             Add to Cart
           </button>
         </div>
         `;
-});
+
+}); 
 
 document.querySelector('.js-product-grid').innerHTML = productsHTML;
+
+window.onload = function (){
+  let cartQuantity = JSON.parse(localStorage.getItem('cart')).length;
+  document.querySelector('.js-cart-quantity').innerHTML = cartQuantity;
+}
+
+//function to update cart quantity
+
+export function updateCartQuantity(){
+  let cartQuantity = JSON.parse(localStorage.getItem('cart')).length;
+  document.querySelector('.js-cart-quantity').innerHTML = cartQuantity;
+   
+  console.log(cartQuantity)
+   
+
+    cart.forEach((cartItem) => {
+        cartQuantity += cartItem.quantity;
+    })
+    localStorage.setItem('cart', JSON.stringify(cart));
+    
+
+}
+
+document.querySelectorAll('.js-add-to-cart').forEach((button) => {
+    button.addEventListener('click',()=>{
+      const productId =  button.dataset.productId;
+      const addToCartMessage = document.querySelector('.add-cart-message');
+      addToCartMessage.classList.add('add-to-cart-message')
+      
+ 
+      addToCart(productId);
+      updateCartQuantity();
+      
+    });
+});
 
 
