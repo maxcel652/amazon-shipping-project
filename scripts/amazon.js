@@ -87,7 +87,9 @@ document.querySelectorAll('.js-add-to-cart').forEach((button) => {
       const addToCartMessage = document.querySelector(`.add-cart-message-${productId}`);
       addToCartMessage.classList.add('add-to-cart-message')
       
- 
+      setTimeout(() => {
+        addToCartMessage.classList.remove('add-to-cart-message')
+      }, 2000);
       addToCart(productId);
       updateCartQuantity();
       
