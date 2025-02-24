@@ -46,7 +46,7 @@ products.forEach((product) => {
 
           <div class="product-spacer"></div>
 
-          <div class="added-to-cart add-cart-message">
+          <div class="added-to-cart add-cart-message-${product.id}">
             <img src="images/icons/checkmark.png">
             Added
           </div>
@@ -72,8 +72,6 @@ export function updateCartQuantity(){
   let cartQuantity = JSON.parse(localStorage.getItem('cart')).length;
   document.querySelector('.js-cart-quantity').innerHTML = cartQuantity;
    
-  console.log(cartQuantity)
-   
 
     cart.forEach((cartItem) => {
         cartQuantity += cartItem.quantity;
@@ -86,7 +84,7 @@ export function updateCartQuantity(){
 document.querySelectorAll('.js-add-to-cart').forEach((button) => {
     button.addEventListener('click',()=>{
       const productId =  button.dataset.productId;
-      const addToCartMessage = document.querySelector('.add-cart-message');
+      const addToCartMessage = document.querySelector(`.add-cart-message-${productId}`);
       addToCartMessage.classList.add('add-to-cart-message')
       
  
