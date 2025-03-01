@@ -1,5 +1,7 @@
 // import { getCartCount } from "../scripts/checkout.js";
 
+import { deliveryOptions } from "./deliverOptions.js";
+
 export let cart = JSON.parse(localStorage.getItem('cart'));
 
 if (!cart){
@@ -38,8 +40,8 @@ export function addToCart(productId){
   } else{
     cart.push({
         productId,
-        quantity,
-        deliveryOptionId:'1'
+        quantity:1,
+      deliveryOptionId:'1'
     });
 
   };
@@ -94,7 +96,6 @@ export function updateQuantity(productId, newQuantity){
   
   matchingItem.quantity = newQuantity;
 
-  saveToStorage();
   // if (matchingItem) {
   //   matchingItem.quantity += quantity;
   // } else{
