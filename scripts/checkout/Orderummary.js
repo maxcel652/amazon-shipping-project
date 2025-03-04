@@ -3,6 +3,7 @@ import {products, getProduct} from "../../data/products.js";
 import {formatCurrency} from "../utils/money.js";
 import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js'
 import { deliveryOptions, getDeliveryOption } from "../../data/deliverOptions.js";
+import { renderPaymentSummary } from "./paymentSummarry.js";
 
 export function renderOrderSummary(){
 
@@ -107,25 +108,15 @@ export function renderOrderSummary(){
 
   //updating count value
 
-  function calculateQuantity(){
-    let getCartCount = () => {
-      return cart.length
-    }
+  // function calculateQuantity(){
+  //   let getCartCount = () => {
+  //     return cart.length
+  //   }
     
-    document.querySelector('.js-check-out-link').innerHTML = getCartCount();
-  }
-  calculateQuantity()
+  //   document.querySelector('.js-check-out-link').innerHTML = getCartCount();
+  // }
+  // calculateQuantity();
 
-  //removing item from cart
-  document.querySelectorAll('.js-delete-link').forEach((link)=>{
-      link.addEventListener('click',()=>{
-          const productId= link.dataset.productId;
-          removeFromCart(productId)
-          const container = document.querySelector(`.js-cart-item-container-${productId}`)
-          container.remove()
-          calculateQuantity()
-    });
-  });
 
   function updateCartQuantity(){
     const cartQuantity = calculateCartQuantity();
@@ -134,6 +125,22 @@ export function renderOrderSummary(){
 
   }
   updateCartQuantity();
+
+  //removing item from cart
+  document.querySelectorAll('.js-delete-link').forEach((link)=>{
+      link.addEventListener('click',()=>{
+          const productId= link.dataset.productId;
+          removeFromCart(productId)
+          const container = document.querySelector(`.js-cart-item-container-${productId}`)
+          container.remove()
+          // calculateQuantity()
+          updateCartQuantity()
+          calculateCartQuantity()
+          renderPaymentSummary();
+    });
+  });
+
+
 
 
   // adding event listener to the update links
@@ -190,6 +197,8 @@ export function renderOrderSummary(){
         quantityInput.value = ''
 
       }
+      calculateCartQuantity();
+      renderPaymentSummary();
       saveToStorage()
     });
   });
@@ -200,6 +209,7 @@ export function renderOrderSummary(){
       updateDelivertOption(productId, deliveryOptionId)
 
       renderOrderSummary();
+      renderPaymentSummary();
     })
   })
 }
