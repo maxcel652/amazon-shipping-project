@@ -5,11 +5,23 @@ import { loadFromStorage } from "../data/cart.js";
 // import '../data/backend-practice.js'
 import { loadProducts } from "../data/products.js";
 
+import { loadCart } from "../data/cart.js";
 
-loadProducts(() =>{
-    loadFromStorage();
-    renderOrderSummary();
-    renderPaymentSummary();
-    
+Promise.all([
+    new Promise((resolve) =>{
+        loadProducts(() =>{
+            resolve('value1')
+        });
+    }),
+
+    new Promise((resolve) =>{
+        loadCart(() =>{
+            resolve()
+        })
+    })
+]).then(()=>{
+    loadFromStorage()
+    renderOrderSummary()
+    renderPaymentSummary()
 })
 
