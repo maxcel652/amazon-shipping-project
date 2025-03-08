@@ -1,80 +1,111 @@
 import { formatCurrency } from "../scripts/utils/money.js";
   
-  export function getProduct(productId){
-    let matchingProduct;
+export function getProduct(productId){
+  let matchingProduct;
 
-    products.forEach((product)=>{
-      if (product.id === productId){
-        matchingProduct = product;
+  products.forEach((product)=>{
+    // console.log('product.id',product.name,product.priceCents, product.id, 'cartItem.productId', productId) // debug line
+
+    if (product.id === productId){
+      matchingProduct = product;
+    }
+  })
+  return matchingProduct;
+}
+
+class Product{
+  id;
+  image;
+  name;
+  rating;
+  priceCents;
+
+
+  constructor(productDetails){
+    this.id = productDetails.id;
+    this.image= productDetails.image;
+    this.name = productDetails.name;
+    this.rating = productDetails.rating;
+    this.priceCents = productDetails.priceCents
+  }
+
+  getStarsUrl(){
+    return `images/ratings/rating-${this.rating.stars *10}.png`;
+  }
+
+  getPrice(){
+    return `$${formatCurrency(this.priceCents)}`;
+  }
+
+  extraInfoHTML(){
+    return ''
+  }
+}
+
+class Clothing extends Product {
+  sizeChartLink;
+
+  constructor(productDetails){
+    super(productDetails);
+    this.sizeChartLink = productDetails.sizeChartLink;
+  }
+
+  extraInfoHTML(){
+    return `
+      <a href="${this.sizeChartLink}" target="_blank">Size chart</a>
+    `
+  }
+}
+
+
+class Appliance extends Product{
+  instructionsLink = 'images/appliance-instructions.png'
+  warrantyLink = 'images/appliance-warranty.png'
+
+  constructor(productDetails){
+    super(productDetails);
+    this.instructionsLink = productDetails.instructionsLink;
+    this.warrantyLink = productDetails.warrantyLink;
+  }
+  extraInfoHTML(){
+    return`
+      <a href="${this.instructionsLink}" target="_blank">Instructions</a>
+      <a href="${this.warrantyLink}" target="_blank">Warranty</a>
+    `
+  }
+}
+
+
+export let products =  [];
+
+export function loadProducts(fun){
+  const xhr = new XMLHttpRequest();
+  xhr.addEventListener('load', ()=>{
+    products = JSON.parse(xhr.response).map((productDetails) =>{
+      if(productDetails.type === 'clothing'){
+        return new Clothing(productDetails);
+
+      }else if(productDetails.keywords.includes('appliances')){
+        return new Appliance(productDetails)
       }
-    })
-    return matchingProduct;
+      return new Product(productDetails)
+    });
+
+    // console.log('load products')
+    // fun();
+    if(products.length > 0){ //added this condition
+      fun();
   }
+  }) 
 
-  class Product{
-    id;
-    image;
-    name;
-    rating;
-    priceCents;
+  xhr.open('GET', 'https://supersimplebackend.dev/products');
+  xhr.send();
+}
 
+  // loadProducts()
 
-    constructor(productDetails){
-      this.id = productDetails.id;
-      this.image= productDetails.image;
-      this.name = productDetails.name;
-      this.rating = productDetails.rating;
-      this.priceCents = productDetails.priceCents
-    }
-
-    getStarsUrl(){
-      return `images/ratings/rating-${this.rating.stars *10}.png`;
-    }
-
-    getPrice(){
-      return `$${formatCurrency(this.priceCents)}`;
-    }
-
-    extraInfoHTML(){
-      return ''
-    }
-  }
-
-  class Clothing extends Product {
-    sizeChartLink;
-
-    constructor(productDetails){
-      super(productDetails);
-      this.sizeChartLink = productDetails.sizeChartLink;
-    }
-
-    extraInfoHTML(){
-      return `
-        <a href="${this.sizeChartLink}" target="_blank">Size chart</a>
-      `
-    }
-  }
-
-
-  class Appliance extends Product{
-    instructionsLink = 'images/appliance-instructions.png'
-    warrantyLink = 'images/appliance-warranty.png'
-
-    constructor(productDetails){
-      super(productDetails);
-      this.instructionsLink = productDetails.instructionsLink;
-      this.warrantyLink = productDetails.warrantyLink;
-    }
-    extraInfoHTML(){
-      return`
-        <a href="${this.instructionsLink}" target="_blank">Instructions</a>
-        <a href="${this.warrantyLink}" target="_blank">Warranty</a>
-      `
-    }
-  }
-
-  
-  export  const products = [
+  /*
+    export  const products = [
       {
         id: "e43638ce-6aa0-4b85-b27f-e1d07eb678c6",
         image: "images/products/athletic-cotton-socks-6-pairs.jpg",
@@ -838,3 +869,4 @@ import { formatCurrency } from "../scripts/utils/money.js";
       }
       return new Product(productDetails)
     });
+*/
